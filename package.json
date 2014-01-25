@@ -1,5 +1,5 @@
 {
-    "name": "Tricky Selectors",
+    "name": "tricky-selectors",
     "version": "1.0.0",
     "description": "CSS quiz for tricky selectors with Ember.js",
     "dependencies": {
