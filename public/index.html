@@ -1,10 +1,42 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8" />
 	<title>Tricky Selectors</title>
+	<link rel="stylesheet" href="css/style.css" />
+	<link rel="stylesheet" href="css/codemirror.css" />
 </head>
 <body>
-	
+
+<!-- templates -->
+<script type="text/x-handlebars" data-template-name="application">
+	<div class="container">
+		{{ outlet }}
+	</div>
+</script>
+
+<script type="text/x-handlebars" data-template-name="index">
+	<h1>CSS Tricky Selectors</h1>
+
+	<button {{ action "start" target="view" }}>Just ask me!</button>	
+
+	<p>If you are trying to select a multi-line element, just select the first tag!</p>
+</script>
+
+<script type="text/x-handlebars" data-template-name="question">
+	<p>{{ name }}</p>
+
+	<div class="code">
+		
+	</div>
+</script>
+
+<!-- scripts -->
+<script src="js/libs/jquery-2.1.0.min.js"></script>
+<script src="js/libs/handlebars-v1.3.0.js"></script>
+<script src="js/libs/ember.min.js"></script>
+<script src="js/libs/codemirror-compressed.js"></script>
+<script src="js/questions.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
