@@ -64,6 +64,10 @@
 	 * Application views.
 	 * @type {object}
 	 */
+	TS.ApplicationView = Ember.View.extend({
+		classNames: ['wrapper']
+	});
+
 	TS.IndexView = Ember.View.extend({
 		actions: {
 			start: function(){
@@ -73,7 +77,6 @@
 	});
 
 	TS.QuestionView = Ember.View.extend({
-		isCorrect: false,
 		actions: {
 			next: function(){
 				var index = this.controller.get('model.id');
@@ -83,13 +86,13 @@
 		},
 		contentChanged: function(){
 			Ember.run.scheduleOnce('afterRender', this, this.updateCodeMirror);
-		}.observes('controller.content'),
+		}.observes('controller.content.[]'),
 		didInsertElement: function(){
 
 			var $codeDiv = this.$('.code');
 			var model    = this.controller.get('model');
 			var self     = this;
-			var $lineDivs;
+			var $lines;
 			var codemirror;
 
 			// run the highlighter
@@ -108,21 +111,23 @@
 			this.set('codemirror', codemirror);
 
 			// reference to codemirror lines
-			$lineDivs = $('.CodeMirror-code', $codeDiv).find('> div');
+			$lines = $('.CodeMirror-code').children();
 
 			// handle click
-			$('.CodeMirror-code', $codeDiv).on('click', '> div', function(e){
+			$('.CodeMirror-code').on('click', '> div', function(e){
 
 				var selected = [];
 				var diff     = [];
+
+				$lines = self.get('$lines') || $lines;
 
 				// toggle highlight class
 				$(this).toggleClass('cm-selected');
 
 				// get selected indexes
-				$lineDivs.each(function(index, line){
+				$lines.each(function(index, line){
 					
-					if ($lineDivs.eq(index).hasClass('cm-selected')) {
+					if ($lines.eq(index).hasClass('cm-selected')) {
 						selected.push(index + 1);
 					}
 
@@ -141,12 +146,15 @@
 			$('.CodeMirror-code').off('click');
 		},
 		updateCodeMirror: function(){
-				
+
 			var codemirror = this.get('codemirror');
 			var inDOM      = this.state == 'inDOM';
 
 			if (inDOM) {
 				codemirror.doc.setValue(this.controller.get('model.code'));
+
+				this.set('$lines', $('.CodeMirror-code').children().removeClass('cm-selected'));
+				this.controller.set('isCorrect', false);
 			}
 
 		}
