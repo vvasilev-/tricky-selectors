@@ -41,8 +41,11 @@
 	 * Application routes.
 	 * @type {object}
 	 */
-	TS.IndexRoute = Ember.Route.extend({});
+	TS.IndexRoute    = Ember.Route.extend({});
 	TS.QuestionRoute = Ember.Route.extend({
+		setupController: function(controller, model){
+			controller.set('model', model);
+		},
 		model: function(params){
 			return win.questions[params.question_id - 1];
 		}
@@ -52,7 +55,10 @@
 	 * Application controllers.
 	 * @type {object}
 	 */
-	TS.IndexController = Ember.ObjectController.extend();
+	TS.IndexController    = Ember.ObjectController.extend({});
+	TS.QuestionController = Ember.ObjectController.extend({
+		isCorrect: false
+	});
 
 	/**
 	 * Application views.
@@ -67,13 +73,81 @@
 	});
 
 	TS.QuestionView = Ember.View.extend({
+		isCorrect: false,
+		actions: {
+			next: function(){
+				var index = this.controller.get('model.id');
+
+				this.controller.transitionToRoute('question', questions[index]);
+			}
+		},
+		contentChanged: function(){
+			Ember.run.scheduleOnce('afterRender', this, this.updateCodeMirror);
+		}.observes('controller.content'),
 		didInsertElement: function(){
-				
+
 			var $codeDiv = this.$('.code');
-			// var instance = CodeMirror($codeDiv[0], {
-			// 	value: 
-			// })
-			console.log(this);
+			var model    = this.controller.get('model');
+			var self     = this;
+			var $lineDivs;
+			var codemirror;
+
+			// run the highlighter
+			codemirror = CodeMirror($codeDiv[0], {
+				value: model.code,
+				theme: 'ts',
+				type: 'xml',
+				readOnly: 'nocursor',
+				lineNumbers: true,
+				lineNumberFormatter: function(number){
+					return number + '.';
+				},
+				viewportMargin: Infinity
+			});	
+
+			this.set('codemirror', codemirror);
+
+			// reference to codemirror lines
+			$lineDivs = $('.CodeMirror-code', $codeDiv).find('> div');
+
+			// handle click
+			$('.CodeMirror-code', $codeDiv).on('click', '> div', function(e){
+
+				var selected = [];
+				var diff     = [];
+
+				// toggle highlight class
+				$(this).toggleClass('cm-selected');
+
+				// get selected indexes
+				$lineDivs.each(function(index, line){
+					
+					if ($lineDivs.eq(index).hasClass('cm-selected')) {
+						selected.push(index + 1);
+					}
+
+				});
+
+				// compare
+				diff = _.difference(model.answers, selected);
+
+				// toggle button
+				self.controller.set('isCorrect', !diff.length);
+
+			});
+
+		},
+		willDestroyElement: function(){
+			$('.CodeMirror-code').off('click');
+		},
+		updateCodeMirror: function(){
+				
+			var codemirror = this.get('codemirror');
+			var inDOM      = this.state == 'inDOM';
+
+			if (inDOM) {
+				codemirror.doc.setValue(this.controller.get('model.code'));
+			}
 
 		}
 	});

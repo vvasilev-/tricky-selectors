@@ -3,8 +3,9 @@
 <head>
 	<meta charset="UTF-8" />
 	<title>Tricky Selectors</title>
+	<link rel="stylesheet" href="css/codemirror/codemirror.css" />
+	<link rel="stylesheet" href="css/codemirror/ts.css" />
 	<link rel="stylesheet" href="css/style.css" />
-	<link rel="stylesheet" href="css/codemirror.css" />
 </head>
 <body>
 
@@ -18,7 +19,7 @@
 <script type="text/x-handlebars" data-template-name="index">
 	<h1>CSS Tricky Selectors</h1>
 
-	<button {{ action "start" target="view" }}>Just ask me!</button>	
+	<a href="#" {{ action start target="view" }}>Just ask me!</a>	
 
 	<p>If you are trying to select a multi-line element, just select the first tag!</p>
 </script>
@@ -26,16 +27,18 @@
 <script type="text/x-handlebars" data-template-name="question">
 	<p>{{ name }}</p>
 
-	<div class="code">
-		
-	</div>
+	<div class="code"></div>
+
+	<a href="#" {{bind-attr class=":btn :btn-green isCorrect:btn-visible"}} {{ action next target="view" }}>Next question</a>	
 </script>
 
 <!-- scripts -->
 <script src="js/libs/jquery-2.1.0.min.js"></script>
 <script src="js/libs/handlebars-v1.3.0.js"></script>
 <script src="js/libs/ember.min.js"></script>
-<script src="js/libs/codemirror-compressed.js"></script>
+<script src="js/libs/lodash.min.js"></script>
+<script src="js/libs/codemirror/codemirror.js"></script>
+<script src="js/libs/codemirror/xml.js"></script>
 <script src="js/questions.js"></script>
 <script src="js/app.js"></script>
 </body>
