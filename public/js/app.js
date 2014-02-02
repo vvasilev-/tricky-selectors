@@ -6,7 +6,7 @@
 	 * Debug.
 	 * @type {mixed}
 	 */
-	var debug = true;
+	var debug = false;
 	var debug_settings = {
 		LOG_TRANSITIONS         : true,
 		LOG_TRANSITIONS_INTERNAL: true,
@@ -118,8 +118,10 @@
 
 				var selected = [];
 				var diff     = [];
-
-				$lines = self.get('$lines') || $lines;
+				var answers;
+				
+				answers = self.controller.get('model.answers');
+				$lines  = self.get('$lines') || $lines;
 
 				// toggle highlight class
 				$(this).toggleClass('cm-selected');
@@ -134,10 +136,10 @@
 				});
 
 				// compare
-				diff = _.difference(model.answers, selected);
+				diff = _.difference(answers, selected);
 
 				// toggle button
-				self.controller.set('isCorrect', !diff.length);
+				self.controller.set('isCorrect', !diff.length && answers.length === selected.length);
 
 			});
 
@@ -159,7 +161,7 @@
 
 		}
 	});
-
+	
 	/**
 	 * Extend window object.
 	 */
